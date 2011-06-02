@@ -302,6 +302,7 @@ public:
             DoScriptText(RAND(SAY_STEELBREAKER_DEATH_1, SAY_STEELBREAKER_DEATH_2), me);
             if (IsEncounterComplete(pInstance, me) && pInstance)
                 pInstance->SetData(TYPE_ASSEMBLY, DONE);
+            pInstance->DoUpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET, 65195);
         }
 
         void KilledUnit(Unit * /*who*/)
@@ -496,6 +497,7 @@ public:
             DoScriptText(RAND(SAY_MOLGEIM_DEATH_1, SAY_MOLGEIM_DEATH_2), me);
             if (IsEncounterComplete(pInstance, me) && pInstance)
                 pInstance->SetData(TYPE_ASSEMBLY, DONE);
+             pInstance->DoUpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET, 65195);
         }
 
         void KilledUnit(Unit * /*who*/)
@@ -752,6 +754,7 @@ public:
             DoScriptText(RAND(SAY_BRUNDIR_DEATH_1, SAY_BRUNDIR_DEATH_2), me);
             if (IsEncounterComplete(pInstance, me) && pInstance)
                 pInstance->SetData(TYPE_ASSEMBLY, DONE);
+            pInstance->DoUpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET, 65195);
         }
 
         void KilledUnit(Unit * /*who*/)

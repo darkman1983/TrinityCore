@@ -497,6 +497,7 @@ public:
             me->AI()->EnterEvadeMode();
             // cast is not rewarding the achievement.
             // DoCast(SPELL_ACHIEVEMENT_CHECK);
+			me->ForcedDespawn(5000);
             pInstance->DoUpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET, SPELL_ACHIEVEMENT_CHECK);
         }
 
