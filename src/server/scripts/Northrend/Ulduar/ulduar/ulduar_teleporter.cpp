@@ -107,9 +107,11 @@ public:
                 pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to the Shattered Walkway", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + WALKWAY);
             if (pInstance->GetBossState(TYPE_AURIAYA) == DONE)
                 pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to the Conservatory of Life", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + CONSERVATORY);
+            if (pInstance->GetBossState(TYPE_FREYA) == DONE)
+                pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to the Spark of Imagination", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + SPARK);
+            if (pInstance->GetBossState(TYPE_VEZAX) == DONE)
+                pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to Descent into Madness", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + MADNESS);
         }
-        // TO DO 2 Missing Teleports ... SPARK nachdem man das entsprechenden Objekt aktiviert hat
-        //                           ... MADDNESS nachdem General Vezax erledigt wurde
         pPlayer->SEND_GOSSIP_MENU(pGO->GetGOInfo()->GetGossipMenuId(), pGO->GetGUID());
         return true;
     }
