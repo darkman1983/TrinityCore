@@ -40,6 +40,8 @@ EndScriptData */
 #define SPELL_FALLING_RUBBLE    63821
 #define SPELL_ARM_ENTER_VEHICLE 65343
 #define SPELL_ARM_ENTER_VISUAL  64753
+#define SPELL_SHOCKWAVE         63783
+#define SPELL_SHOCKWAVE_VISUAL  63788
 
 #define SPELL_SUMMON_FOCUSED_EYEBEAM        63342
 #define SPELL_FOCUSED_EYEBEAM_PERIODIC      RAID_MODE(63347, 63977)
@@ -52,12 +54,15 @@ EndScriptData */
 #define SPELL_KOLOGARN_PACIFY       63726
 #define SPELL_KOLOGARN_UNK_0        65219   // Not found in DBC
 
-#define SPELL_BERSERK           47008 // guess
+#define SPELL_BERSERK               47008 // guess
 
-#define NPC_RUBBLE_STALKER      33809
-#define NPC_ARM_SWEEP_STALKER   33661
+#define NPC_RUBBLE_STALKER          33809
+#define NPC_ARM_SWEEP_STALKER       33661
 
-#define EMOTE_EYEBEAM           "Kologarn fokussiert seinen Blick auf Euch!"
+#define EMOTE_EYEBEAM           "Kologarn focusing his eyes on you"
+#define EMOTE_LEFT              "The Left Arm has regrown!"
+#define EMOTE_RIGHT             "The Right Arm has regrown!"
+#define EMOTE_STONE             "Kologarn casts Stone Grip!"
 
 enum Events
 {
@@ -66,6 +71,7 @@ enum Events
     EVENT_MELEE_CHECK,
     EVENT_SMASH,
     EVENT_SWEEP,
+    EVENT_SHOCKWAVE,
     EVENT_STONE_SHOUT,
     EVENT_STONE_GRIP,
     EVENT_FOCUSED_EYEBEAM,
@@ -136,6 +142,7 @@ class boss_kologarn : public CreatureScript
                 events.ScheduleEvent(EVENT_SWEEP, 19000);
                 events.ScheduleEvent(EVENT_STONE_GRIP, 25000);
                 events.ScheduleEvent(EVENT_FOCUSED_EYEBEAM, 21000);
+				events.ScheduleEvent(EVENT_SHOCKWAVE, 12000);
                 events.ScheduleEvent(EVENT_ENRAGE, 600000);
 
                 for (uint8 i = 0; i < 2; ++i)
@@ -305,12 +312,14 @@ class boss_kologarn : public CreatureScript
                     case EVENT_RESPAWN_LEFT_ARM:
                     {
                         RespawnArm(NPC_LEFT_ARM);
+						me->MonsterTextEmote(EMOTE_LEFT, 0, true);
                         events.CancelEvent(EVENT_RESPAWN_LEFT_ARM);
                         break;
                     }
                     case EVENT_RESPAWN_RIGHT_ARM:
                     {
                         RespawnArm(NPC_RIGHT_ARM);
+						me->MonsterTextEmote(EMOTE_RIGHT, 0, true);
                         events.CancelEvent(EVENT_RESPAWN_RIGHT_ARM);
                         break;
                     }
@@ -318,12 +327,22 @@ class boss_kologarn : public CreatureScript
                     {
                         if (right)
                         {
+							me->MonsterTextEmote(EMOTE_STONE, 0, true);
                             DoCast(SPELL_STONE_GRIP);
                             DoScriptText(SAY_GRAB_PLAYER, me);
                         }
                         events.RepeatEvent(25000);
                     }
                     break;
+					case EVENT_SHOCKWAVE:
+						if (left)
+						{
+							DoScriptText(SAY_SHOCKWAVE, me);
+							DoCastAOE(SPELL_SHOCKWAVE, true);
+							DoCastAOE(SPELL_SHOCKWAVE_VISUAL, true);
+						}
+						events.RepeatEvent(urand(15000, 25000));
+						break;
                     case EVENT_FOCUSED_EYEBEAM:
                         Unit* eyebeamTargetUnit = SelectTarget(SELECT_TARGET_FARTHEST, 0, 50.0f, true);
                         if (eyebeamTargetUnit)
