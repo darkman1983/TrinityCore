@@ -1,0 +1,1 @@
+UPDATE `script_texts` SET `content_loc3` = 'Jetzt seid Ihr nicht mehr so hart, was?' WHERE `npc_entry` =29305 AND `entry` = -1604016;
