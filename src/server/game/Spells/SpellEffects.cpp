@@ -429,6 +429,16 @@ void Spell::EffectSchoolDMG(SpellEffIndex effIndex)
                         damage = (m_caster->getLevel() - 60) * 4 + 60;
                         break;
                     }
+                    // Blade Warding (Damage)
+                    case 64442:
+                    {
+                        uint8 multiplie = m_caster->GetAura(64440)->GetStackAmount();
+                        if(!multiplie)
+                            return;
+                        damage = urand(600 * multiplie, 800 * multiplie);
+                        // damage = m_spellInfo->Effects[0].CalcBaseValue(m_caster) * multiplie; //bad, with every StackAmount the damage value range becomes bigger and bigger
+                        break;
+                    }
                 }
                 break;
             }
