@@ -4351,6 +4351,26 @@ int32 Unit::GetMaxNegativeAuraModifier(AuraType auratype) const
     return modifier;
 }
 
+int32 Unit::GetMaxStackableAuraModifier(AuraType auratype, AuraEffect const* except, int32 miscValue) const
+{
+    int32 modifier = 0;
+
+    AuraEffectList const& totalAuraList = GetAuraEffectsByType(auratype);
+    for (AuraEffectList::const_iterator i = totalAuraList.begin(); i != totalAuraList.end(); ++i)
+    {
+        if ((*i)->GetSpellInfo()->CanStackEffectValues())
+            continue;
+
+        if (miscValue < MAX_STATS && (*i)->GetMiscValue() != miscValue)
+            continue;
+
+        if (except != (*i) && (*i)->GetAmount() > modifier)
+            modifier = (*i)->GetAmount();
+    }
+
+    return modifier;
+}
+
 int32 Unit::GetTotalAuraModifierByMiscMask(AuraType auratype, uint32 misc_mask) const
 {
     int32 modifier = 0;

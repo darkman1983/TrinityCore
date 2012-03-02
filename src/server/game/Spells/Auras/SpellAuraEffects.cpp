@@ -3841,15 +3841,24 @@ void AuraEffect::HandleAuraModStat(AuraApplication const* aurApp, uint8 mode, bo
         return;
     }
 
-    for (int32 i = STAT_STRENGTH; i < MAX_STATS; i++)
+    for (int32 i = STAT_STRENGTH; i < MAX_STATS; ++i)
     {
         // -1 or -2 is all stats (misc < -2 checked in function beginning)
         if (GetMiscValue() < 0 || GetMiscValue() == i)
         {
-            //target->ApplyStatMod(Stats(i), m_amount, apply);
-            target->HandleStatModifier(UnitMods(UNIT_MOD_STAT_START + i), TOTAL_VALUE, float(GetAmount()), apply);
+            float amount = float(GetAmount());
+
+            if (!GetSpellInfo()->CanStackEffectValues() && amount > 0)
+            {
+                int32 multiStatMod = target->GetMaxStackableAuraModifier(SPELL_AURA_MOD_STAT, this, -1);
+                int32 singleStatMod = target->GetMaxStackableAuraModifier(SPELL_AURA_MOD_STAT, this, i);
+                amount -= std::max<int32>(multiStatMod, singleStatMod);
+                amount = std::max<float>(amount, 0.f);
+            }
+
+            target->HandleStatModifier(UnitMods(UNIT_MOD_STAT_START + i), TOTAL_VALUE, amount, apply);
             if (target->GetTypeId() == TYPEID_PLAYER || target->ToCreature()->isPet())
-                target->ApplyStatBuffMod(Stats(i), (float)GetAmount(), apply);
+                target->ApplyStatBuffMod(Stats(i), amount, apply);
         }
     }
 }
@@ -3969,13 +3978,23 @@ void AuraEffect::HandleModTotalPercentStat(AuraApplication const* aurApp, uint8 
     float healthPct = target->GetHealthPct();
     bool alive = target->isAlive();
 
-    for (int32 i = STAT_STRENGTH; i < MAX_STATS; i++)
+    for (int32 i = STAT_STRENGTH; i < MAX_STATS; ++i)
     {
         if (GetMiscValue() == i || GetMiscValue() == -1)
         {
-            target->HandleStatModifier(UnitMods(UNIT_MOD_STAT_START + i), TOTAL_PCT, float(GetAmount()), apply);
+            float amount = float(GetAmount());
+
+            if (!GetSpellInfo()->CanStackEffectValues() && amount > 0)
+            {
+                int32 multiStatMod = target->GetMaxStackableAuraModifier(SPELL_AURA_MOD_TOTAL_STAT_PERCENTAGE, this, -1);
+                int32 singleStatMod = target->GetMaxStackableAuraModifier(SPELL_AURA_MOD_TOTAL_STAT_PERCENTAGE, this, i);
+                amount -= std::max<int32>(multiStatMod, singleStatMod);
+                amount = std::max<float>(amount, 0.f);
+            }
+
+            target->HandleStatModifier(UnitMods(UNIT_MOD_STAT_START + i), TOTAL_PCT, amount, apply);
             if (target->GetTypeId() == TYPEID_PLAYER || target->ToCreature()->isPet())
-                target->ApplyStatPercentBuffMod(Stats(i), float(GetAmount()), apply);
+                target->ApplyStatPercentBuffMod(Stats(i), amount, apply);
         }
     }
 
@@ -4068,18 +4087,26 @@ void AuraEffect::HandleAuraModIncreaseHealth(AuraApplication const* aurApp, uint
 
     Unit* target = aurApp->GetTarget();
 
+    int32 amount = GetAmount();
+
+    if (!GetSpellInfo()->CanStackEffectValues() && amount > 0)
+    {
+        amount -= target->GetMaxStackableAuraModifier(SPELL_AURA_230, this);
+        amount = std::max<int32>(amount, 0);
+    }
+
     if (apply)
     {
-        target->HandleStatModifier(UNIT_MOD_HEALTH, TOTAL_VALUE, float(GetAmount()), apply);
-        target->ModifyHealth(GetAmount());
+        target->HandleStatModifier(UNIT_MOD_HEALTH, TOTAL_VALUE, float(amount), apply);
+        target->ModifyHealth(amount);
     }
     else
     {
-        if (int32(target->GetHealth()) > GetAmount())
-            target->ModifyHealth(-GetAmount());
+        if (int32(target->GetHealth()) > amount)
+            target->ModifyHealth(-amount);
         else
             target->SetHealth(1);
-        target->HandleStatModifier(UNIT_MOD_HEALTH, TOTAL_VALUE, float(GetAmount()), apply);
+        target->HandleStatModifier(UNIT_MOD_HEALTH, TOTAL_VALUE, float(amount), apply);
     }
 }
 
@@ -4469,7 +4496,15 @@ void AuraEffect::HandleAuraModAttackPower(AuraApplication const* aurApp, uint8 m
 
     Unit* target = aurApp->GetTarget();
 
-    target->HandleStatModifier(UNIT_MOD_ATTACK_POWER, TOTAL_VALUE, float(GetAmount()), apply);
+    float amount = float(GetAmount());
+
+    if (!GetSpellInfo()->CanStackEffectValues() && amount > 0)
+    {
+        amount -= target->GetMaxStackableAuraModifier(SPELL_AURA_MOD_ATTACK_POWER, this);
+        amount = std::max<float>(amount, 0.f);
+    }
+
+    target->HandleStatModifier(UNIT_MOD_ATTACK_POWER, TOTAL_VALUE, amount, apply);
 }
 
 void AuraEffect::HandleAuraModRangedAttackPower(AuraApplication const* aurApp, uint8 mode, bool apply) const
@@ -4482,7 +4517,15 @@ void AuraEffect::HandleAuraModRangedAttackPower(AuraApplication const* aurApp, u
     if ((target->getClassMask() & CLASSMASK_WAND_USERS) != 0)
         return;
 
-    target->HandleStatModifier(UNIT_MOD_ATTACK_POWER_RANGED, TOTAL_VALUE, float(GetAmount()), apply);
+    float amount = float(GetAmount());
+
+    if (!GetSpellInfo()->CanStackEffectValues() && amount > 0)
+    {
+        amount -= target->GetMaxStackableAuraModifier(SPELL_AURA_MOD_RANGED_ATTACK_POWER, this);
+        amount = std::max<float>(amount, 0.f);
+    }
+
+    target->HandleStatModifier(UNIT_MOD_ATTACK_POWER_RANGED, TOTAL_VALUE, amount, apply);
 }
 
 void AuraEffect::HandleAuraModAttackPowerPercent(AuraApplication const* aurApp, uint8 mode, bool apply) const

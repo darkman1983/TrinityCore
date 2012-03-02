@@ -1825,6 +1825,7 @@ class Unit : public WorldObject
         float GetTotalAuraMultiplier(AuraType auratype) const;
         int32 GetMaxPositiveAuraModifier(AuraType auratype);
         int32 GetMaxNegativeAuraModifier(AuraType auratype) const;
+        int32 GetMaxStackableAuraModifier(AuraType auratype, AuraEffect const* except, int32 miscValue = MAX_STATS) const;
 
         int32 GetTotalAuraModifierByMiscMask(AuraType auratype, uint32 misc_mask) const;
         float GetTotalAuraMultiplierByMiscMask(AuraType auratype, uint32 misc_mask) const;

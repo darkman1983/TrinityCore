@@ -979,6 +979,11 @@ bool SpellInfo::IsAutocastable() const
     return true;
 }
 
+bool SpellInfo::CanStackEffectValues() const
+{
+    return !(AttributesEx6 & SPELL_ATTR6_UNK30) && !(AttributesEx7 & SPELL_ATTR7_UNK28);
+}
+
 bool SpellInfo::IsStackableWithRanks() const
 {
     if (IsPassive())

@@ -389,6 +389,7 @@ public:
 
     bool IsPassive() const;
     bool IsAutocastable() const;
+    bool CanStackEffectValues() const;
     bool IsStackableWithRanks() const;
     bool IsPassiveStackableWithRanks() const;
     bool IsMultiSlotAura() const;
