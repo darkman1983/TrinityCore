@@ -1224,11 +1224,8 @@ class spell_stormhammer_targeting : public SpellScriptLoader
                 if (unitList.empty())
                     return;
 
-                std::list<Unit*>::iterator itr = unitList.begin();
-                std::advance(itr, urand(0, unitList.size() - 1));
-                _target = *itr;
-                unitList.clear();
-                unitList.push_back(_target);
+                _target = SelectRandomContainerElement(unitList);
+                SetTarget(unitList);
             }
 
             void SetTarget(std::list<Unit*>& unitList)
@@ -1252,25 +1249,6 @@ class spell_stormhammer_targeting : public SpellScriptLoader
         SpellScript* GetSpellScript() const
         {
             return new spell_stormhammer_targeting_SpellScript();
-        }
-};
-
-class achievement_who_needs_bloodlust : public AchievementCriteriaScript
-{
-    public:
-        achievement_who_needs_bloodlust() : AchievementCriteriaScript("achievement_who_needs_bloodlust")
-        {
-        }
-
-        bool OnCheck(Player* player, Unit* /*target*/)
-        {
-            if (!player)
-                return false;
-
-            if (player->HasAura(SPELL_AURA_OF_CELERITY))
-                return true;
-
-            return false;
         }
 };
 
@@ -1338,5 +1316,4 @@ void AddSC_boss_thorim()
     new npc_ancient_rune_giant();
     new npc_sif();
     new spell_stormhammer_targeting();
-    new achievement_who_needs_bloodlust();
 }

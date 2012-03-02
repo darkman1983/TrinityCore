@@ -50,6 +50,8 @@ enum Spells
     // Shamans
     SPELL_LAVA_BURST                            = 61924,
     SPELL_STORM_CLOUD                           = 65123,
+    SPELL_STORM_POWER_10                        = 63711,
+    SPELL_STORM_POWER_25                        = 65134,
     // Mages
     SPELL_FIREBALL                              = 61909,
     SPELL_CONJURE_FIRE                          = 62823,
@@ -917,6 +919,82 @@ class spell_biting_cold : public SpellScriptLoader
         }
 };
 
+// TODO: fixme
+class spell_hodir_toasty_fire : public SpellScriptLoader
+{
+    public:
+        spell_hodir_toasty_fire() : SpellScriptLoader("spell_hodir_toasty_fire") { }
+
+        class spell_hodir_toasty_fire_AuraScript : public AuraScript
+        {
+            PrepareAuraScript(spell_hodir_toasty_fire_AuraScript);
+
+            void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+            {
+                Unit* target = GetTarget();
+                if (!target || !target->ToPlayer())
+                    return;
+
+                target->ToPlayer()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET2, GetId());
+            }
+
+            void Register()
+            {
+                OnEffectApply += AuraEffectApplyFn(spell_hodir_toasty_fire_AuraScript::OnApply, EFFECT_0, SPELL_AURA_MOD_STAT, AURA_EFFECT_HANDLE_REAL);
+            }
+        };
+
+        AuraScript* GetAuraScript() const
+        {
+            return new spell_hodir_toasty_fire_AuraScript();
+        }
+};
+
+// TODO: fixme
+class spell_hodir_starlight : public SpellScriptLoader
+{
+    public:
+        spell_hodir_starlight() : SpellScriptLoader("spell_hodir_starlight") { }
+
+        class spell_hodir_starlight_AuraScript : public AuraScript
+        {
+            PrepareAuraScript(spell_hodir_starlight_AuraScript);
+
+            void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+            {
+                Unit* target = GetTarget();
+                if (!target || !target->ToPlayer())
+                    return;
+
+                target->ToPlayer()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET2, GetId());
+            }
+
+            void Register()
+            {
+                OnEffectApply += AuraEffectApplyFn(spell_hodir_starlight_AuraScript::OnApply, EFFECT_0, SPELL_AURA_MELEE_SLOW, AURA_EFFECT_HANDLE_REAL);
+            }
+        };
+
+        AuraScript* GetAuraScript() const
+        {
+            return new spell_hodir_starlight_AuraScript();
+        }
+};
+
+class achievement_staying_buffed_all_winter : public AchievementCriteriaScript
+{
+   public:
+       achievement_staying_buffed_all_winter() : AchievementCriteriaScript("achievement_staying_buffed_all_winter") { }
+
+       bool OnCheck(Player* player, Unit* /*target*/)
+       {
+           if (player->HasAura(SPELL_SINGED) && player->HasAura(SPELL_STARLIGHT) && (player->HasAura(SPELL_STORM_POWER_10) || player->HasAura(SPELL_STORM_POWER_25)))
+               return true;
+
+           return false;
+       }
+};
+
 /*
 -- Hodir
 UPDATE `creature_template` SET `mechanic_immune_mask` = 650854239, `flags_extra` = 1, `ScriptName` = 'boss_hodir' WHERE `entry` = 32845;
@@ -958,4 +1036,7 @@ void AddSC_boss_hodir()
     new npc_toasty_fire();
     new npc_flash_freeze();
     new spell_biting_cold();
+    new spell_hodir_starlight();
+    new spell_hodir_toasty_fire();
+    new achievement_staying_buffed_all_winter();
 }
